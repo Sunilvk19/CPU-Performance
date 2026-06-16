@@ -2,13 +2,20 @@ import React from 'react';
 import { calculateStats } from '../utils/stats';
 
 const StatGrid = ({ cpuData, count }) => {
-  const stats = calculateStats(cpuData);
-  const currentUsage = Math.round(stats.cpuUsages[stats.cpuUsages.length-1] ?? 0);
   
+  const { avg, peak, latest } = calculateStats(cpuData);
+  
+  
+  const currentUsage = latest.cpuUsage;
+  const currentMemoryPct = latest.memoryUsedPct;
+  const currentMemoryGB = latest.memoryUsedGB;
+  const currentDiskPct = latest.diskUsedPercent;
+  const currentDiskGB = latest.diskUsedGB;
+  const currentUptime = latest.uptime;
+
   const isCritical = currentUsage >= 90;
   const isWarn = currentUsage >= 70 && currentUsage < 90;
 
- console.log("a", cpuData)
   const formatUptime = (seconds) => {
     if (!seconds) return "0m";
     const h = Math.floor(seconds / 3600);
@@ -33,7 +40,7 @@ const StatGrid = ({ cpuData, count }) => {
         <div className='absolute top-0 left-0 w-full h-1 bg-cyan-500/50'></div>
         <span className='text-slate-400 text-xs font-bold tracking-wider mb-3'>CPU AVG (60s)</span>
         <div>
-           <span className='text-4xl font-bold text-orange-500'>{stats.avg}%</span>
+           <span className='text-4xl font-bold text-orange-500'>{avg}%</span>
            <div className='text-slate-500 text-xs mt-1 font-medium'>60s average</div>
         </div>
       </div>
@@ -43,8 +50,9 @@ const StatGrid = ({ cpuData, count }) => {
         <div className='absolute top-0 left-0 w-full h-1 bg-purple-500/50'></div>
         <span className='text-slate-400 text-xs font-bold tracking-wider mb-3'>MEMORY</span>
         <div>
-           <span className='text-4xl font-bold text-purple-400'>{stats.currentMemoryPct.toFixed(1)}%</span>
-           <div className='text-slate-500 text-xs mt-1 font-medium'>Used: {stats.currentMemoryGB} GB</div>
+           {/* FIX: Removed .toFixed(1) to support pure integer rendering safely */}
+           <span className='text-4xl font-bold text-purple-400'>{currentMemoryPct}%</span>
+           <div className='text-slate-500 text-xs mt-1 font-medium'>Used: {currentMemoryGB} GB</div>
         </div>
       </div>
 
@@ -53,17 +61,18 @@ const StatGrid = ({ cpuData, count }) => {
         <div className='absolute top-0 left-0 w-full h-1 bg-emerald-500/50'></div>
         <span className='text-slate-400 text-xs font-bold tracking-wider mb-3'>DISK STORAGE</span>
         <div>
-           <span className='text-4xl font-bold text-emerald-400'>{stats.currentDiskPct.toFixed(1)}%</span>
-           <div className='text-slate-500 text-xs mt-1 font-medium'>Used: {stats.currentDiskGB} GB</div>
+           {/* FIX: Removed .toFixed(1) to support pure integer rendering safely */}
+           <span className='text-4xl font-bold text-emerald-400'>{currentDiskPct}%</span>
+           <div className='text-slate-500 text-xs mt-1 font-medium'>Used: {currentDiskGB} GB</div>
         </div>
       </div>
 
-      {/* 5. UPTIME & EVENTS CONTAINER */}
+      {/* 5. SYSTEM UPTIME CARD */}
       <div className='bg-[#182136] border border-slate-700/50 rounded-xl p-5 relative overflow-hidden flex flex-col justify-between shadow-lg'>
         <div className='absolute top-0 left-0 w-full h-1 bg-amber-500/50'></div>
         <span className='text-slate-400 text-xs font-bold tracking-wider mb-3'>SYSTEM UPTIME</span>
         <div>
-           <span className='text-3xl font-bold text-amber-400'>{formatUptime(stats.currentUptime)}</span>
+           <span className='text-3xl font-bold text-amber-400'>{formatUptime(currentUptime)}</span>
            <div className='text-slate-500 text-xs mt-1 font-medium'>Continuous runtime</div>
         </div>
       </div>

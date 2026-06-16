@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCpuMonitor } from './hooks/useCpuMonitor';
 import MainChart from './components/MainChart';
 import StatGrid from './components/StatGrid';
 
 function App() {
-  const { cpuData, staticData, count } = useCpuMonitor();
+  const [timeRange, setTimeRange] = useState('live');
+  const { cpuData, staticData, count } = useCpuMonitor(timeRange);
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -25,7 +26,7 @@ function App() {
       <StatGrid cpuData={cpuData} count={count} />
 
       <div style={{ marginTop: '30px' }}>
-        <MainChart cpuData={cpuData} />
+        <MainChart cpuData={cpuData} timeRange={timeRange} setTimeRange={setTimeRange} />
       </div>
     </div>
   );
