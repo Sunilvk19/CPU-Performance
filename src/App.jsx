@@ -1,41 +1,35 @@
-import React from "react";
-import StatGrid from "./components/StatGrid";
-import MainChart from "./components/MainChart";
-import { useCpuMonitor } from "./hooks/useCpuMonitor";
+import React, { useState } from 'react';
+import { useCpuMonitor } from './hooks/useCpuMonitor';
+import MainChart from './components/MainChart';
+import StatGrid from './components/StatGrid';
 
-const App = () => {
-  const { cpuData, count } = useCpuMonitor();
+function App() {
+  const [timeRange, setTimeRange] = useState('live');
+  const { cpuData, staticData, count } = useCpuMonitor(timeRange);
+
   return (
-   <div className="min-h-screen bg-[#0b1220] text-white px-4 sm:px-6 lg:px-8 py-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <header style={{ marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
+        <h1 style={{ margin: 0 }}> System Performance Monitor</h1>
+        {staticData ? (
+          <p style={{ color: '#666', margin: '5px 0 0 0' }}>
+            <strong>Device:</strong> {staticData.hostname} |{' '}
+            <strong>OS:</strong> {staticData.os} ({staticData.platform}) |{' '}
+            <strong> Total RAM:</strong> {staticData.memory_total_gb} GB |{' '}
+            <strong> Total Storage:</strong> {staticData.disk_total_gb} GB
+          </p>
+        ) : (
+          <p style={{ color: '#999', margin: '5px 0 0 0' }}>Loading system info...</p>
+        )}
+      </header>
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div>
-            <p className="text-xs text-gray-400 tracking-widest">
-              SYSTEM MONITOR
-            </p>
-            <h1 className="text-3xl font-bold">
-              CPU <span className="text-cyan-400">Performance</span>
-            </h1>
-          </div>
+      <StatGrid cpuData={cpuData} count={count} />
 
-          <div className="flex items-center gap-2 text-cyan-400 text-sm">
-            <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-            LIVE • 1s
-          </div>
-        </div>
-        {/* Stats */}
-        <StatGrid cpuData={cpuData} count={count} />
-
-        {/* Chart */}
-        <div className="bg-[#111827] border border-gray-700 rounded-xl p-4 shadow-lg">
-          <MainChart cpuData={cpuData} />
-        </div>
-
+      <div style={{ marginTop: '30px' }}>
+        <MainChart cpuData={cpuData} timeRange={timeRange} setTimeRange={setTimeRange} />
       </div>
     </div>
   );
-};
+}
 
 export default App;
